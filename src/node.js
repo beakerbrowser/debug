@@ -18,6 +18,7 @@ exports.formatArgs = formatArgs;
 exports.save = save;
 exports.load = load;
 exports.useColors = useColors;
+exports.overrideUseColors = overrideUseColors;
 
 /**
  * Colors.
@@ -72,10 +73,19 @@ var stream = 1 === fd ? process.stdout :
  * Is stdout a TTY? Colored output is enabled when `true`.
  */
 
+var _overrideUseColors = false
 function useColors() {
+  if (_overrideUseColors) return false
   return 'colors' in exports.inspectOpts
     ? Boolean(exports.inspectOpts.colors)
     : tty.isatty(fd);
+}
+
+function overrideUseColors () {
+  _overrideUseColors = true;
+  for (var k in exports._debuggers) {
+    exports._debuggers[k].useColors = false
+  }
 }
 
 /**
